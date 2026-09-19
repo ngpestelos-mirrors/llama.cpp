@@ -64,8 +64,8 @@ static std::string server_model_status_to_string(server_model_status status) {
 static std::string server_model_source_to_string(server_model_source source) {
     switch (source) {
         case SERVER_MODEL_SOURCE_PRESET:     return "preset";
-        case SERVER_MODEL_SOURCE_MODELS_DIR: return "models_dir";
-        case SERVER_MODEL_SOURCE_CACHE:      return "cache";
+        case SERVER_MODEL_SOURCE_MODELS_DIR: return "models";
+        case SERVER_MODEL_SOURCE_CACHE:      return "cached";
         default:                             return "unknown";
     }
 }
