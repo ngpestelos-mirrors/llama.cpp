@@ -3,6 +3,9 @@
 
 #include "build-info.h"
 #include "common.h"
+
+#include "../src/llama-ext.h"
+
 #include "fit.h"
 #include "log.h"
 #include "llama.h"
@@ -1208,6 +1211,9 @@ common_decision_type common_get_decision_type(const struct llama_model * model) 
     if (type == "laya") {
         return COMMON_DECISION_TYPE_LAYA;
     }
+    if (type == "clef") {
+        return COMMON_DECISION_TYPE_CLEF;
+    }
     return COMMON_DECISION_TYPE_UNKNOWN;
 }
 
@@ -1263,9 +1269,10 @@ common_init_result::common_init_result(common_params & params, bool model_only) 
 
     const llama_vocab * vocab = llama_model_get_vocab(model);
 
-    // this decision model returns a score for each token via the embeddings output
+    // these decision models return a score for each token via the embeddings output
     // TODO: maybe improve this in the future
-    if (common_get_decision_type(model) == COMMON_DECISION_TYPE_LAYA) {
+    const auto decision_type = common_get_decision_type(model);
+    if (decision_type == COMMON_DECISION_TYPE_LAYA || decision_type == COMMON_DECISION_TYPE_CLEF) {
         params.embedding    = true;
         params.pooling_type = LLAMA_POOLING_TYPE_NONE;
 
@@ -1274,7 +1281,7 @@ common_init_result::common_init_result(common_params & params, bool model_only) 
         cparams.n_outputs_max         = cparams.n_batch;
         cparams.n_outputs_max_per_seq = 1;
 
-        LOG_INF("%s", "laya decision model detected, enabling embedding mode\n");
+        LOG_INF("%s", "decision model detected, enabling embedding mode\n");
     }
 
     // load and optionally apply lora adapters
@@ -2210,6 +2217,9 @@ llama_batch_ext * common_batch::get_sub_batch(int32_t off, int32_t n) {
         }
         if (t.output) {
             llama_batch_ext_set_output_logits(res, idx, true);
+        }
+        if (t.decision_order != 0) {
+            llama_batch_ext_set_decision_order(res, idx, t.decision_order);
         }
     }
 

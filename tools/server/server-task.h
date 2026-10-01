@@ -181,6 +181,10 @@ struct server_task {
         std::vector<llama_token> labels;  // logits of these tokens, at the last prompt token
         std::vector<int32_t>     markers; // embeddings[column] at these prompt positions
         int32_t                  column = 0;
+
+
+        // for a joint head: one value per prompt token, see llama_batch_ext_set_decision_order()
+        std::vector<int32_t> order;
     };
     decision decision;
 
