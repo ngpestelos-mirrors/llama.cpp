@@ -1314,6 +1314,14 @@ class TensorNameMap:
             "joint_head.option_norm",  # clef
         ),
 
+        MODEL_TENSOR.DECISION_SCORER: (
+            "joint_head.residual_scorer.0",  # clef
+        ),
+
+        MODEL_TENSOR.DECISION_SCORER_OUT: (
+            "joint_head.residual_scorer.3",  # clef
+        ),
+
         MODEL_TENSOR.ENC_ATTN_NORM: (
             "encoder.block.{bid}.layer.0.layer_norm", # t5
         ),
@@ -1515,13 +1523,11 @@ class TensorNameMap:
             "dense",            # neobert
             "head.dense",       # modern-bert
             "scorer.1",  # laya
-            "joint_head.residual_scorer.0",  # clef
         ),
 
         MODEL_TENSOR.CLS_OUT: (
             "classifier.out_proj", # roberta
             "scorer.3",  # laya
-            "joint_head.residual_scorer.3",  # clef
         ),
 
         MODEL_TENSOR.CLS_NORM: (

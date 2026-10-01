@@ -90,10 +90,11 @@ void llama_model_clef::load_arch_tensors(llama_model_loader & ml) {
 
     scales    = create_tensor(tn(LLM_TENSOR_DECISION_SCALES),          {3}, 0);
     type_embd = create_tensor(tn(LLM_TENSOR_TOKEN_TYPES, "weight"),    {n_embd_h, 3}, 0);
-    cls       = create_tensor(tn(LLM_TENSOR_CLS,         "weight"),    {4 * n_embd_h, n_embd_h}, 0);
-    cls_b     = create_tensor(tn(LLM_TENSOR_CLS,         "bias"),      {n_embd_h}, 0);
-    cls_out   = create_tensor(tn(LLM_TENSOR_CLS_OUT,     "weight"),    {n_embd_h, 1}, 0);
-    cls_out_b = create_tensor(tn(LLM_TENSOR_CLS_OUT,     "bias"),      {1}, 0);
+
+    scorer       = create_tensor(tn(LLM_TENSOR_DECISION_SCORER,     "weight"), {4 * n_embd_h, n_embd_h}, 0);
+    scorer_b     = create_tensor(tn(LLM_TENSOR_DECISION_SCORER,     "bias"),   {n_embd_h}, 0);
+    scorer_out   = create_tensor(tn(LLM_TENSOR_DECISION_SCORER_OUT, "weight"), {n_embd_h, 1}, 0);
+    scorer_out_b = create_tensor(tn(LLM_TENSOR_DECISION_SCORER_OUT, "bias"),   {1}, 0);
 }
 
 std::unique_ptr<llm_graph_context> llama_model_clef::build_arch_graph(const llm_graph_params & params) const {
@@ -598,9 +599,9 @@ ggml_tensor * llama_model_clef::graph::build_head(ggml_tensor * hidden, input_de
     features = ggml_concat(ctx0, features, ggml_mul(ctx0, field, options), 0);
     features = ggml_concat(ctx0, features, ggml_abs(ctx0, ggml_sub(ctx0, field, options)), 0);
 
-    ggml_tensor * residual = ggml_add(ctx0, ggml_mul_mat(ctx0, model.cls, features), model.cls_b);
+    ggml_tensor * residual = ggml_add(ctx0, ggml_mul_mat(ctx0, model.scorer, features), model.scorer_b);
     residual = ggml_gelu_erf(ctx0, residual);
-    residual = ggml_add(ctx0, ggml_mul_mat(ctx0, model.cls_out, residual), model.cls_out_b); // [1, n_options]
+    residual = ggml_add(ctx0, ggml_mul_mat(ctx0, model.scorer_out, residual), model.scorer_out_b); // [1, n_options]
 
     auto scale = [&](int i) {
         return ggml_view_1d(ctx0, model.scales, 1, i * ggml_element_size(model.scales));

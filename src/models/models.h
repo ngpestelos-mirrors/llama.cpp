@@ -2445,6 +2445,10 @@ struct llama_model_clef : public llama_model_qwen35 {
     ggml_tensor * proj_option_context  = nullptr;
     ggml_tensor * proj_option_lexical  = nullptr;
     ggml_tensor * scales               = nullptr; // prior scale, joint scale, residual gate
+    ggml_tensor * scorer               = nullptr;
+    ggml_tensor * scorer_b             = nullptr;
+    ggml_tensor * scorer_out           = nullptr;
+    ggml_tensor * scorer_out_b         = nullptr;
 
     class input_decision;
 

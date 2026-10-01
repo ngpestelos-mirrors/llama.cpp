@@ -534,29 +534,6 @@ static const std::string CLEF_PIECE_STATE    = "<<clef:state>>";
 static const std::string CLEF_PIECE_QUESTION = "<<clef:question>>";
 static const std::string CLEF_PIECE_OPTION   = "<<clef:option>>";
 
-// same value with the keys of all objects sorted
-static json decision_sort_keys(const json & val) {
-    if (val.is_array()) {
-        json out = json::array();
-        for (const auto & item : val) {
-            out.push_back(decision_sort_keys(item));
-        }
-        return out;
-    }
-    if (val.is_object()) {
-        std::map<std::string, json> sorted;
-        for (const auto & [key, item] : val.items()) {
-            sorted[key] = decision_sort_keys(item);
-        }
-        json out = json::object();
-        for (const auto & [key, item] : sorted) {
-            out[key] = item;
-        }
-        return out;
-    }
-    return val;
-}
-
 // strings are used as is, other values are compact JSON with sorted keys
 static std::string clef_render(const json & val) {
     return val.is_string() ? val.get<std::string>() : decision_sort_keys(val).dump();
