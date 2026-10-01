@@ -181,7 +181,17 @@ struct server_task {
         std::vector<llama_token> labels;  // logits of these tokens, at the last prompt token
         std::vector<int32_t>     markers; // embeddings[column] at these prompt positions
         int32_t                  column = 0;
+        // if set, embeddings is [q | k], and the output is instead the scaled dot product of q[pointer] and k[marker]
+        int32_t                  pointer = -1;
 
+        // first prompt position that is read, -1 if none
+        int32_t pos_first() const {
+            int32_t pos = pointer;
+            for (const int32_t marker : markers) {
+                pos = pos < 0 ? marker : std::min(pos, marker);
+            }
+            return pos;
+        }
 
         // for a joint head: one value per prompt token, see llama_batch_ext_set_decision_order()
         std::vector<int32_t> order;

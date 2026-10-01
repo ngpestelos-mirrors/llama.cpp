@@ -886,6 +886,8 @@ class MODEL_TENSOR(IntEnum):
     DECISION_FIELD_NORM    = auto()
     DECISION_OPTION_NORM   = auto()
     DECISION_SCALES        = auto()
+    DECISION_SCORER        = auto()
+    DECISION_SCORER_OUT    = auto()
     ENC_ATTN_NORM        = auto()
     ENC_ATTN_Q           = auto()
     ENC_ATTN_K           = auto()
@@ -1662,6 +1664,8 @@ TENSOR_NAMES: dict[MODEL_TENSOR, str] = {
     MODEL_TENSOR.DECISION_FIELD_NORM:       "decision.field_norm",
     MODEL_TENSOR.DECISION_OPTION_NORM:      "decision.option_norm",
     MODEL_TENSOR.DECISION_SCALES:           "decision.scales",
+    MODEL_TENSOR.DECISION_SCORER:           "decision.scorer",
+    MODEL_TENSOR.DECISION_SCORER_OUT:       "decision.scorer_out",
     MODEL_TENSOR.ENC_ATTN_NORM:             "enc.blk.{bid}.attn_norm",
     MODEL_TENSOR.ENC_ATTN_Q:                "enc.blk.{bid}.attn_q",
     MODEL_TENSOR.ENC_ATTN_K:                "enc.blk.{bid}.attn_k",
@@ -2917,6 +2921,7 @@ MODEL_TENSORS: dict[MODEL_ARCH, list[MODEL_TENSOR]] = {
         MODEL_TENSOR.TOKEN_EMBD,
         MODEL_TENSOR.OUTPUT_NORM,
         MODEL_TENSOR.OUTPUT,
+        MODEL_TENSOR.CLS_OUT,
         MODEL_TENSOR.ATTN_NORM,
         MODEL_TENSOR.ATTN_Q,
         MODEL_TENSOR.ATTN_Q_NORM,
@@ -2971,8 +2976,6 @@ MODEL_TENSORS: dict[MODEL_ARCH, list[MODEL_TENSOR]] = {
         MODEL_TENSOR.SSM_OUT,
         # decision head
         MODEL_TENSOR.TOKEN_TYPES,
-        MODEL_TENSOR.CLS,
-        MODEL_TENSOR.CLS_OUT,
         MODEL_TENSOR.DEC_ATTN_NORM,
         MODEL_TENSOR.DEC_ATTN_Q,
         MODEL_TENSOR.DEC_ATTN_K,
@@ -2998,6 +3001,8 @@ MODEL_TENSORS: dict[MODEL_ARCH, list[MODEL_TENSOR]] = {
         MODEL_TENSOR.DECISION_FIELD_NORM,
         MODEL_TENSOR.DECISION_OPTION_NORM,
         MODEL_TENSOR.DECISION_SCALES,
+        MODEL_TENSOR.DECISION_SCORER,
+        MODEL_TENSOR.DECISION_SCORER_OUT,
     ],
     MODEL_ARCH.QWEN35MOE: [
         MODEL_TENSOR.TOKEN_EMBD,
@@ -5999,6 +6004,8 @@ class GGUFValueType(IntEnum):
 class DecisionType:
     LAYA    = "laya"     # head blocks + scorer on the hidden state of one marker token per option
     OPENJEV = "openjev"  # logits of one label token per option
+    LEV     = "lev"      # same as openjev, noul is read from a rating scale
+    KEV     = "kev"      # dot product of the hidden states of the last token and of one end token per option
     CLEF    = "clef"     # joint head over all questions, one score per option
 
 
