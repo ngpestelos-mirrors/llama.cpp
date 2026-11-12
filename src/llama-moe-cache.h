@@ -35,7 +35,7 @@ public:
     // ggml_backend_sched copy callback, returns false if src is not a slot map
     bool copy(ggml_backend_t backend, const ggml_tensor * src, ggml_tensor * dst, ggml_cgraph * graph);
 
-    // batches of up to 8 tokens compute the misses within the graph, without slot lookups (see ggml-moe-cpu-misses.h):
+    // batches of up to 8 tokens compute the misses within the graph, without slot lookups (see llama-moe-cpu-misses.h):
     // the device looks up the slots, the CPU computes a share of the misses, and the other misses are cached by the device or between the graphs
     // can_cpu_part: the graph can compute the misses of layer il on the CPU
     bool single(int32_t il, int64_t n_tokens, bool can_cpu_part) const;
